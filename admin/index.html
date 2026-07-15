@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #1a0a0e;
+            color: #f0e0e4;
+            min-height: 100vh;
+            padding: 1rem;
+            padding-bottom: 3rem;
+        }
+        a, a:visited, a:hover, a:active {
+            color: inherit;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .admin-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ff6b8a;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .admin-header h1 {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-header h1 i {
+            color: #ffd700;
+        }
+        .admin-header .admin-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            min-height: 40px;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-primary {
+            background: #ff6b8a;
+            color: white;
+        }
+        .btn-danger {
+            background: #fc8181;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffd700;
+            color: #1a0a0e;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #ff6b8a;
+            color: #ff6b8a;
+        }
+        .btn-small {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            min-height: 32px;
+        }
+        .admin-form {
+            background: #2d1b1f;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #3d2b2f;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: #f0e0e4;
+            font-size: 0.9rem;
+        }
+        .form-group label i {
+            color: #ff6b8a;
+            margin-right: 6px;
+        }
+        .form-group label .required {
+            color: #ff6b8a;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid #3d2b2f;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: border 0.3s;
+            font-family: inherit;
+            background: #1a0a0e;
+            color: #f0e0e4;
+            -webkit-appearance: none;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b8a;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f0e0e4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        .form-group .helper {
+            color: #7a5a62;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            display: block;
+        }
+        .upload-area {
+            border: 3px dashed #3d2b2f;
+            border-radius: 14px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: #1a0a0e;
+        }
+        .upload-area:active {
+            border-color: #ff6b8a;
+        }
+        .upload-area.dragover {
+            border-color: #ff6b8a;
+            background: #2d1b1f;
+        }
+        .upload-area i {
+            font-size: 2.5rem;
+            color: #ff6b8a;
+            margin-bottom: 0.3rem;
+        }
+        .upload-area p {
+            color: #7a5a62;
+            font-size: 0.85rem;
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+        .preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #3d2b2f;
+        }
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: #ff6b8a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-item .remove-btn:active {
+            background: #e53e3e;
+        }
+        .btn-submit {
+            background: #ffd700;
+            color: #1a0a0e;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 50px;
+        }
+        .btn-submit:active {
+            background: #f0c000;
+            transform: scale(0.98);
+        }
+        .posts-list {
+            background: #2d1b1f;
+            border-radius: 16px;
+            padding: 1.2rem;
+            border: 1px solid #3d2b2f;
+        }
+        .posts-list h3 {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .posts-list h3 i {
+            color: #ff6b8a;
+        }
+        .post-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #3d2b2f;
+        }
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        .post-item .info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .post-item .info .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 100px;
+        }
+        .post-item .info .category {
+            background: #ff6b8a;
+            color: white;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+        .post-item .info .date {
+            color: #7a5a62;
+            font-size: 0.7rem;
+        }
+        .post-item .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .post-item .actions button {
+            padding: 0.3rem 0.7rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .post-item .actions .edit-btn {
+            background: #ffd700;
+            color: #1a0a0e;
+        }
+        .post-item .actions .edit-btn:active {
+            background: #f0c000;
+        }
+        .post-item .actions .delete-btn {
+            background: #fc8181;
+            color: white;
+        }
+        .post-item .actions .delete-btn:active {
+            background: #e53e3e;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 1.5rem;
+            color: #7a5a62;
+        }
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #2d1b1f;
+            color: #f0e0e4;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 9999;
+            max-width: 90%;
+            border: 1px solid #ff6b8a;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .loading {
+            text-align: center;
+            padding: 1.5rem;
+            color: #7a5a62;
+        }
+        .loading i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        @media (min-width: 600px) {
+            body {
+                padding: 2rem;
+            }
+            .admin-header {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+            .admin-form {
+                padding: 2rem;
+            }
+            .post-item {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .post-item .info {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="admin-header">
+            <h1><i class="fas fa-crown"></i> Admin Panel</h1>
+            <div class="admin-actions">
+                <span id="adminStatus" style="color:#48bb78;font-size:0.8rem;">
+                    <i class="fas fa-circle"></i> Online
+                </span>
+                <a href="/" class="btn btn-outline btn-small">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <button class="btn btn-danger btn-small" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <form class="admin-form" id="adminForm">
+            <div class="form-group">
+                <label><i class="fas fa-gamepad"></i> Nama Game <span class="required">*</span></label>
+                <input type="text" id="title" placeholder="Minecraft Java" required />
+                <span class="helper"><i class="fas fa-info-circle"></i> Slug otomatis dari judul</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Kategori</label>
+                <select id="category">
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="RPG">RPG</option>
+                    <option value="Simulation">Simulation</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Puzzle">Puzzle</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-pen"></i> Deskripsi</label>
+                <textarea id="description" placeholder="Ceritakan pengalaman translate-mu..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-images"></i> Screenshot <span class="required">*</span></label>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Tap untuk upload foto</p>
+                    <p style="font-size: 0.7rem; color: #7a5a62;">JPG, PNG, GIF (Max 5MB)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple />
+                </div>
+                <div class="preview-container" id="previewContainer"></div>
+                <span class="helper"><i class="fas fa-info-circle"></i> Upload ke Cloudflare R2</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-download"></i> Link Download</label>
+                <input type="url" id="downloadLink" placeholder="https://sfile.mobi/..." />
+            </div>
+
+            <input type="hidden" id="editId" value="" />
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> Publikasikan
+            </button>
+        </form>
+
+        <div class="posts-list">
+            <h3><i class="fas fa-list"></i> Daftar Postingan</h3>
+            <div id="postsContainer">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        var posts = [];
+        var editingId = null;
+        var uploadedFiles = [];
+
+        function checkAuth() {
+            fetch('/api/auth/status')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (!data.authenticated) {
+                        window.location.href = '/admin/login.html';
+                    }
+                })
+                .catch(function() {
+                    window.location.href = '/admin/login.html';
+                });
+        }
+
+        function loadPosts() {
+            fetch('/api/posts')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    posts = data || [];
+                    renderPostList();
+                })
+                .catch(function() {
+                    posts = [];
+                    renderPostList();
+                });
+        }
+
+        function renderPostList() {
+            var container = document.getElementById('postsContainer');
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:0.3rem;"></i>Belum ada postingan</div>';
+                return;
+            }
+
+            var html = '';
+            var sorted = posts.slice().reverse();
+            for (var i = 0; i < sorted.length; i++) {
+                var post = sorted[i];
+                html += '<div class="post-item">' +
+                    '<div class="info">' +
+                    '<span class="title">' + escapeHtml(post.title) + '</span>' +
+                    '<span class="category">' + escapeHtml(post.category) + '</span>' +
+                    '<span class="date"><i class="far fa-calendar-alt"></i> ' + post.date + '</span>' +
+                    '</div>' +
+                    '<div class="actions">' +
+                    '<button class="edit-btn" onclick="editPost(' + post.id + ')"><i class="fas fa-edit"></i></button>' +
+                    '<button class="delete-btn" onclick="deletePost(' + post.id + ')"><i class="fas fa-trash"></i></button>' +
+                    '</div>' +
+                    '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function editPost(id) {
+            var post = posts.find(function(p) { return p.id === id; });
+            if (!post) return;
+
+            editingId = id;
+            document.getElementById('editId').value = id;
+            document.getElementById('title').value = post.title;
+            document.getElementById('category').value = post.category;
+            document.getElementById('description').value = post.description || '';
+            document.getElementById('downloadLink').value = post.downloadLink || '';
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update';
+
+            var container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            if (post.images && post.images.length > 0) {
+                for (var i = 0; i < post.images.length; i++) {
+                    var div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = '<img src="' + post.images[i] + '" alt="Preview" />' +
+                        '<button class="remove-btn" onclick="this.parentElement.remove()">&times;</button>';
+                    container.appendChild(div);
+                }
+                uploadedFiles = post.images.slice();
+            }
+
+            document.getElementById('adminForm').scrollIntoView({ behavior: 'smooth' });
+            showToast('📝 Form diisi otomatis!');
+        }
+
+        function deletePost(id) {
+            if (!confirm('Hapus postingan ini?')) return;
+
+            fetch('/api/posts/' + id, { method: 'DELETE' })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        showToast('🗑️ Dihapus');
+                        loadPosts();
+                    } else {
+                        showToast('❌ Gagal hapus');
+                    }
+                })
+                .catch(function() {
+                    showToast('❌ Gagal hapus');
+                });
+        }
+
+        function logout() {
+            fetch('/api/auth/logout', { method: 'POST' })
+                .then(function() {
+                    window.location.href = '/admin/login.html';
+                })
+                .catch(function() {
+                    window.location.href = '/admin/login.html';
+                });
+        }
+
+        var fileInput = document.getElementById('fileInput');
+        var previewContainer = document.getElementById('previewContainer');
+        var uploadArea = document.getElementById('uploadArea');
+
+        function handleFiles(files) {
+            var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            var maxSize = 5 * 1024 * 1024;
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (validTypes.indexOf(file.type) === -1) {
+                    showToast('Format tidak didukung');
+                    continue;
+                }
+                if (file.size > maxSize) {
+                    showToast('File maksimal 5MB');
+                    continue;
+                }
+                uploadFile(file);
+            }
+        }
+
+        function uploadFile(file) {
+            var formData = new FormData();
+            formData.append('image', file);
+
+            showToast('📤 Uploading...');
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    uploadedFiles.push(data.url);
+                    renderPreviews();
+                    showToast('✅ Upload berhasil');
+                } else {
+                    showToast('❌ Gagal: ' + data.error);
+                }
+            })
+            .catch(function() {
+                showToast('❌ Gagal upload');
+            });
+        }
+
+        function renderPreviews() {
+            previewContainer.innerHTML = '';
+            for (var i = 0; i < uploadedFiles.length; i++) {
+                var url = uploadedFiles[i];
+                var div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = '<img src="' + url + '" alt="Preview" />' +
+                    '<button class="remove-btn" onclick="removeImage(' + i + ')">&times;</button>';
+                previewContainer.appendChild(div);
+            }
+        }
+
+        function removeImage(index) {
+            uploadedFiles.splice(index, 1);
+            renderPreviews();
+        }
+
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(this.files);
+            this.value = '';
+        });
+
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        document.getElementById('adminForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var title = document.getElementById('title').value.trim();
+            var category = document.getElementById('category').value;
+            var description = document.getElementById('description').value.trim();
+            var downloadLink = document.getElementById('downloadLink').value.trim();
+            var editId = document.getElementById('editId').value;
+
+            if (!title) {
+                showToast('Isi nama game dulu!');
+                return;
+            }
+
+            if (uploadedFiles.length === 0) {
+                showToast('Upload minimal 1 screenshot!');
+                return;
+            }
+
+            var data = {
+                title: title,
+                category: category,
+                description: description,
+                images: uploadedFiles,
+                downloadLink: downloadLink || ''
+            };
+
+            if (editId) {
+                data.id = parseInt(editId);
+            }
+
+            fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(result) {
+                if (result.success) {
+                    showToast('✅ Berhasil disimpan!');
+                    resetForm();
+                    loadPosts();
+                } else {
+                    showToast('❌ Gagal: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(function() {
+                showToast('❌ Gagal menyimpan');
+            });
+        });
+
+        function resetForm() {
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('downloadLink').value = '';
+            document.getElementById('editId').value = '';
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Publikasikan';
+            uploadedFiles = [];
+            renderPreviews();
+            editingId = null;
+        }
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        checkAuth();
+        loadPosts();
+        setInterval(loadPosts, 30000);
+    </script>
+
+</body>
+</html>
