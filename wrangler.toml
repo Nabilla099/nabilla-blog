@@ -1,0 +1,16 @@
+name = "nabillakh-translate"
+main = "index.html"
+compatibility_date = "2026-07-15"
+
+[[kv_namespaces]]
+binding = "BLOG_KV"
+id = "YOUR_KV_ID"
+preview_id = "YOUR_KV_ID"
+
+[[r2_buckets]]
+binding = "BLOG_IMAGES"
+bucket_name = "blog-images"
+
+[vars]
+ADMIN_USERNAME = "nabillakh11"
+ADMIN_PASSWORD = "nabillakh900@@##"
